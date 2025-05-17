@@ -1,6 +1,6 @@
 export default {
   async fetch(request, env, ctx) {
-    const allowedOrigin = "https://jinfire.github.io/jinpt/frontend/jinpt.html";
+    const allowedOrigin = "https://jinfire.github.io";
 
     // CORS preflight 요청 처리
     if (request.method === "OPTIONS") {
