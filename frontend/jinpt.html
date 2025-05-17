@@ -78,7 +78,7 @@
       input.value = "";
 
       // GPT 응답 가져오기
-      const res = await fetch("https://jinpt.jensoo7023.workers.dev/api/chat", {
+      const res = await fetch("https://jinpt.jensoo7023.workers.dev", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message })
