@@ -1,4 +1,4 @@
 name = "jinpt"                 # 워커 이름 (Cloudflare 대시보드에 표시됨)
 compatibility_date = "2025-05-17"  # 오늘 날짜 또는 원하는 호환 날짜
-
+main = "worker.js"
 type = "javascript"               # 자바스크립트 워커임을 명시
