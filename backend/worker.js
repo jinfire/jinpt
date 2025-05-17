@@ -1,5 +1,20 @@
 export default {
   async fetch(request, env, ctx) {
+    const allowedOrigin = "https://jinfire.github.io/jinpt/frontend/jinpt.html";
+
+    // CORS preflight 요청 처리
+    if (request.method === "OPTIONS") {
+      return new Response(null, {
+        status: 204,
+        headers: {
+          "Access-Control-Allow-Origin": allowedOrigin,
+          "Access-Control-Allow-Methods": "POST, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type",
+          "Access-Control-Max-Age": "86400"
+        }
+      });
+    }
+
     if (request.method !== "POST") {
       return new Response("Method not allowed", { status: 405 });
     }
@@ -11,7 +26,7 @@ export default {
       if (!userMessage || typeof userMessage !== "string") {
         return new Response(JSON.stringify({ error: "Invalid input" }), {
           status: 400,
-          headers: { "Content-Type": "application/json" }
+          headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": allowedOrigin }
         });
       }
 
@@ -35,7 +50,7 @@ export default {
         const errorDetail = await openaiResponse.text();
         return new Response(JSON.stringify({ error: "OpenAI API error", detail: errorDetail }), {
           status: openaiResponse.status,
-          headers: { "Content-Type": "application/json" }
+          headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": allowedOrigin }
         });
       }
 
@@ -43,13 +58,13 @@ export default {
       const reply = data.choices?.[0]?.message?.content || "No reply from OpenAI";
 
       return new Response(JSON.stringify({ reply }), {
-        headers: { "Content-Type": "application/json" }
+        headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": allowedOrigin }
       });
 
     } catch (error) {
       return new Response(JSON.stringify({ error: "Something went wrong", detail: error.message }), {
         status: 500,
-        headers: { "Content-Type": "application/json" }
+        headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": allowedOrigin }
       });
     }
   }
