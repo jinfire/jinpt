@@ -1,6 +1,17 @@
 export default {
   async fetch(request, env, ctx) {
     const allowedOrigin = "https://jinfire.github.io";
+    const chatHistories = {}; // sessionId -> messages 배열
+
+    const getMessages = (sessionId, userMessage) => {
+      if (!chatHistories[sessionId]) {
+        chatHistories[sessionId] = [
+          { role: "system", content: "You are a helpful assistant." }
+        ];
+      }
+      chatHistories[sessionId].push({ role: "user", content: userMessage });
+      return chatHistories[sessionId];
+    };
 
     // CORS preflight 요청 처리
     if (request.method === "OPTIONS") {
@@ -22,6 +33,11 @@ export default {
     try {
       const body = await request.json();
       const userMessage = body.message;
+      const sessionId = body.sessionId;
+
+      if (!sessionId) {
+        return new Response(JSON.stringify({ error: "Missing sessionId" }), { status: 400 });
+      }
 
       if (!userMessage || typeof userMessage !== "string") {
         return new Response(JSON.stringify({ error: "Invalid input" }), {
@@ -29,6 +45,8 @@ export default {
           headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": allowedOrigin }
         });
       }
+
+      const messages = getMessages(sessionId, userMessage);
 
       const openaiResponse = await fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
@@ -38,10 +56,7 @@ export default {
         },
         body: JSON.stringify({
           model: "gpt-4o-mini",
-          messages: [
-            { role: "system", content: "You are a helpful assistant." },
-            { role: "user", content: userMessage }
-          ],
+          messages: messages,
           temperature: 0.7
         })
       });
@@ -56,6 +71,7 @@ export default {
 
       const data = await openaiResponse.json();
       const reply = data.choices?.[0]?.message?.content || "No reply from OpenAI";
+      chatHistories[sessionId].push({ role: "assistant", content: reply });
 
       return new Response(JSON.stringify({ reply }), {
         headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": allowedOrigin }
