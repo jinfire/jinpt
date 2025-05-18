@@ -1,8 +1,9 @@
+const chatHistories = {}; // sessionId -> messages 배열
+
 export default {
   async fetch(request, env, ctx) {
     const allowedOrigin = "https://jinfire.github.io";
-    const chatHistories = {}; // sessionId -> messages 배열
-
+    
     const getMessages = (sessionId, userMessage) => {
       if (!chatHistories[sessionId]) {
         chatHistories[sessionId] = [
