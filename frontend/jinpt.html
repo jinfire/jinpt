@@ -104,6 +104,8 @@
   <script>
     let sessionId = crypto.randomUUID();
     let sessions = {};
+    // 로딩 메시지 DOM 요소 저장용
+    let loadingMessageDiv = null
 
     function updateChatList() {
       const chatList = document.getElementById("chat-list");
@@ -162,6 +164,13 @@
       input.value = "";
       chatBox.scrollTop = chatBox.scrollHeight;
 
+      //로딩 메시지 추가
+      loadingMessageDiv = document.createElement("div");
+      loadingMessageDiv.className = "message";
+      loadingMessageDiv.textContent = "Thinking... 🤔";
+      chatBox.appendChild(loadingMessageDiv);
+      chatBox.scrollTop = chatBox.scrollHeight;
+
       try {
       const res = await fetch("https://jinpt.jensoo7023.workers.dev", {
         method: "POST",
@@ -175,7 +184,8 @@
       const data = await res.json();
       const reply = data.reply || "No response";
       sessions[sessionId].messages.push({ role: "assistant", content: reply });
-
+      if (loadingMessageDiv) loadingMessageDiv.remove();
+      
       const gptMessage = document.createElement("div");
       gptMessage.className = "message";
       gptMessage.textContent = reply;
@@ -183,6 +193,8 @@
       chatBox.scrollTop = chatBox.scrollHeight;
       } catch (error) {
         console.error("Error occurred while sending message:", error);
+        if (loadingMessageDiv) loadingMessageDiv.remove();
+
         const errorMessage = document.createElement("div");
         errorMessage.className = "message";
         errorMessage.textContent = "Error occurred while fetching response.";
