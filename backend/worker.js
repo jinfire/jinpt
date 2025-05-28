@@ -56,9 +56,9 @@ export default {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          model: "gpt-4o-mini",
+          model: "chatgpt-4o-latest",
           messages: messages,
-          temperature: 0.7
+          temperature: 1.0
         })
       });
 
