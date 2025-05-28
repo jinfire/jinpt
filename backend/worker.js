@@ -56,7 +56,7 @@ export default {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          model: "chatgpt-4o-latest",
+          model: "gpt-4.1-2025-04-14",
           messages: messages,
           temperature: 1.0
         })
